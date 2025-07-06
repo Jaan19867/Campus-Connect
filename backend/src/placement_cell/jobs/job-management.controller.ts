@@ -36,7 +36,7 @@ export class JobManagementController {
     return this.jobService.updateJobStatus(id, body.status);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   async deleteJob(@Param('id') id: string) {
     return this.jobService.deleteJob(id);
   }
