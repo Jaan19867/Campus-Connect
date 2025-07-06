@@ -1,0 +1,340 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Student's Modal 
+model Student {
+  id              String   @id @default(cuid())
+  rollNumber      String   @unique
+  email           String   @unique
+  password        String   // Hashed
+  
+  // Personal Information
+  firstName       String
+  lastName        String
+  phoneNumber     String?
+  
+  // Academic Information
+  branch          Branch
+  currentYear     Int      // 1, 2, 3, 4
+  gpa             Float
+  cgpa            Float?
+  tenthMarks      Float?
+  twelfthMarks    Float?
+  
+  // Account Settings
+  profilePicture  String?
+  isActive        Boolean  @default(true)
+  
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  applications    Application[]
+  resumes         Resume[]
+  skills          StudentSkill[]
+  notifications Notification[]
+  
+  @@map("students")
+}
+
+// Jobs Modal 
+
+// Simplified Job Model - No Company Relationship
+model Job {
+  id                String   @id @default(cuid())
+  
+  // Basic Job Information
+  name              String   // "Neenjas Electric Pvt Ltd. 6M Intern 2025"
+  jobDescription    String?  // URL or text description
+  formLink          String?
+  location          String?
+  
+  // Company Information (Simplified)
+  companyName       String   // "Neenjas Electric Pvt Ltd."
+  companyId         String?  // Reference if you want to track companies later
+  
+  // Job Details
+  jobType           String   // "intern", "fulltime", etc.
+  ctc               Int?     // 15000 (monthly for intern)
+  gradYear          String   // "2025"
+  drive             String?
+  postData          String?
+  
+  // Application Timing
+  applicationOpen   DateTime // "2025-06-20T18:30:00.000Z"
+  applicationClosed DateTime // "2025-06-21T11:00:00.000Z"
+  
+  // General Eligibility
+  status            JobStatus @default(OPEN)
+  genderOpen        GenderEligibility @default(BOTH)
+  pwdOnly           Boolean  @default(false)
+  psu               Boolean  @default(false)
+  backlogsAllowed   Int      @default(0)
+  openForPlaced     Boolean  @default(false)
+  ctcCutoff         Int      @default(0)
+  
+  // Academic Cutoffs
+  tenthPercentageCutoff        Float @default(0)
+  twelfthPercentageCutoff      Float @default(0)
+  undergraduatePercentageCutoff Float @default(0)
+  
+  // Degree-Specific Eligibility
+  // B.Tech
+  btech             Boolean  @default(false)
+  btechCutoff       Float    @default(0)
+  btechBranches     Int[]    @default([])
+  
+  // M.Tech
+  mtech             Boolean  @default(false)
+  mtechCutoff       Float    @default(0)
+  mtechBranches     Int[]    @default([])
+  
+  // MBA
+  mba               Boolean  @default(false)
+  mbaCutoff         Float    @default(0)
+  mbaBranches       Int[]    @default([])
+  
+  // B.Des
+  bdes              Boolean  @default(false)
+  bdesCutoff        Float    @default(0)
+  
+  // M.Des
+  mdes              Boolean  @default(false)
+  mdesCutoff        Float    @default(0)
+  
+  // BA
+  ba                Boolean  @default(false)
+  baCutoff          Float    @default(0)
+  
+  // MA
+  ma                Boolean  @default(false)
+  maCutoff          Float    @default(0)
+  
+  // BBA
+  bba               Boolean  @default(false)
+  bbaCutoff         Float    @default(0)
+  
+  // M.Sc
+  msc               Boolean  @default(false)
+  mscCutoff         Float    @default(0)
+  mscBranches       Int[]    @default([])
+  
+  // Admin Information
+  handledBy         String?  // Admin who manages this job
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Relations
+  applications      Application[]
+  // Add this relation to your existing Job model  
+  notifications Notification[]
+  
+  @@map("jobs")
+}
+
+// Placement Cell Admin Model
+model PlacementCell {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String   // Hashed
+  firstName     String
+  lastName      String
+  isActive      Boolean  @default(true)
+  lastLogin     DateTime?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("placement_cell")
+}
+
+// Events - Independent from Jobs
+model Event {
+  id              String    @id @default(cuid())
+  title           String
+  description     String?
+  
+  // Event Details
+  eventDate       DateTime
+  venue           String?
+  duration        String?   // "2 hours"
+  eventType       EventType @default(PRE_PLACEMENT_TALK)
+  
+  // Company Info for Event (Embedded)
+  companyName     String?
+  companyContact  String?
+  
+  // Event Management
+  isActive        Boolean   @default(true)
+  maxAttendees    Int?
+  addedBy         String?   // Admin who added this
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  // Add this relation to your existing Job model  
+  notifications Notification[]
+  
+  @@map("events")
+}
+
+// Application and Resume Models : 
+
+model Application {
+  id              String            @id @default(cuid())
+  status          ApplicationStatus @default(APPLIED)
+  appliedAt       DateTime          @default(now())
+  statusUpdatedAt DateTime          @default(now())
+  
+  // Application Data
+  coverLetter     String?
+  selectedResumeId String?
+  
+  // Admin Feedback
+  adminFeedback   String?
+  adminNotes      String?
+  
+  // Relations
+  studentId       String
+  student         Student @relation(fields: [studentId], references: [id])
+  jobId           String
+  job             Job     @relation(fields: [jobId], references: [id])
+  selectedResume  Resume? @relation(fields: [selectedResumeId], references: [id])
+  
+  
+  @@unique([studentId, jobId])
+  @@map("applications")
+}
+
+model Resume {
+  id              String   @id @default(cuid())
+  fileName        String
+  originalName    String
+  filePath        String
+  fileSize        Int
+  
+  // Metadata
+  isDefault       Boolean  @default(false)
+  uploadedAt      DateTime @default(now())
+  
+  // Relations
+  studentId       String
+  student         Student @relation(fields: [studentId], references: [id])
+  applications    Application[]
+  
+  @@map("resumes")
+}
+
+model StudentSkill {
+  id              String     @id @default(cuid())
+  skillName       String
+  proficiency     SkillLevel
+  
+  studentId       String
+  student         Student @relation(fields: [studentId], references: [id])
+  
+  @@unique([studentId, skillName])
+  @@map("student_skills")
+}
+
+model Notification {
+  id            String           @id @default(cuid())
+  title         String
+  message       String
+  type          NotificationType
+  isRead        Boolean          @default(false)
+  
+  // Relations
+  studentId     String
+  student       Student @relation(fields: [studentId], references: [id])
+  
+  // Optional job/event references
+  jobId         String?
+  job           Job?    @relation(fields: [jobId], references: [id])
+  eventId       String?
+  event         Event?  @relation(fields: [eventId], references: [id])
+  
+  createdAt     DateTime @default(now())
+  
+  @@map("notifications")
+}
+
+
+
+
+
+
+enum Branch {
+  COMPUTER_SCIENCE
+  ELECTRONICS
+  MECHANICAL
+  CIVIL
+  ELECTRICAL
+  CHEMICAL
+  AEROSPACE
+  BIOTECHNOLOGY
+  INDUSTRIAL
+  INFORMATION_TECHNOLOGY
+  // Add more branches as needed
+}
+
+enum EventType {
+  PRE_PLACEMENT_TALK
+  WORKSHOP
+  SEMINAR
+  CAREER_FAIR
+  COMPANY_VISIT
+  WEBINAR
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SHORTLISTED
+  NOT_SHORTLISTED
+  SELECTED
+  REJECTED
+}
+
+enum JobStatus {
+  OPEN
+  CLOSED
+  DRAFT
+  CANCELLED
+}
+
+enum GenderEligibility {
+  MALE
+  FEMALE
+  BOTH
+}
+
+
+enum NotificationType {
+  JOB_ELIGIBLE
+  APPLICATION_UPDATE
+  EVENT_REMINDER
+  DEADLINE_REMINDER
+  GENERAL
+}

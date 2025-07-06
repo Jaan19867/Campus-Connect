@@ -11,7 +11,7 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
-  await app.listen(process.env.PORT ?? 3006);
-  console.log(`Backend is running on: http://localhost:${process.env.PORT ?? 3006}`);
+  await app.listen(process.env.PORT ?? 3009);
+  console.log(`Backend is running on: http://localhost:${process.env.PORT ?? 3009}`);
 }
 bootstrap();
