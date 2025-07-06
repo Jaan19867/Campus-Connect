@@ -1,12 +1,12 @@
 # Resume Manager
 
-A full-stack application built with React TypeScript frontend and NestJS backend.
+A full-stack application built with Next.js TypeScript frontend and NestJS backend.
 
 ## Project Structure
 
 ```
 Resume-Manager/
-├── frontend/          # React TypeScript application
+├── frontend/          # Next.js TypeScript application
 ├── backend/           # NestJS application
 ├── package.json       # Root package.json with scripts
 └── README.md          # This file
@@ -49,13 +49,13 @@ npm run dev
 ```bash
 npm run dev:frontend
 ```
-- Runs on: http://localhost:3000
+- Runs on: http://localhost:3002
 
 **Backend only:**
 ```bash
 npm run dev:backend
 ```
-- Runs on: http://localhost:3001
+- Runs on: http://localhost:3006
 
 ## Build
 
@@ -79,9 +79,11 @@ npm start
 ## Technologies Used
 
 ### Frontend
+- Next.js 14 (latest)
 - React 18
 - TypeScript
-- Create React App
+- Tailwind CSS
+- ESLint
 
 ### Backend
 - NestJS
@@ -91,8 +93,8 @@ npm start
 ## API Documentation
 
 Once the backend is running, you can access:
-- API endpoints: http://localhost:3001
-- API documentation: http://localhost:3001/api (if Swagger is configured)
+- API endpoints: http://localhost:3006
+- API documentation: http://localhost:3006/api (if Swagger is configured)
 
 ## Contributing
 
