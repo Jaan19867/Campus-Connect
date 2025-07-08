@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -147,6 +147,71 @@ export class ApplicationsService {
         return acc;
       }, {}),
       recent: recentApplications,
+    };
+  }
+
+  async updateApplicationResume(applicationId: string, studentId: string, selectedResumeId: string) {
+    // First, verify the application belongs to the student
+    const application = await this.prisma.application.findFirst({
+      where: {
+        id: applicationId,
+        studentId,
+      },
+    });
+
+    if (!application) {
+      throw new NotFoundException('Application not found');
+    }
+
+    // Verify the resume belongs to the student
+    const resume = await this.prisma.resume.findFirst({
+      where: {
+        id: selectedResumeId,
+        studentId,
+      },
+    });
+
+    if (!resume) {
+      throw new BadRequestException('Resume not found or does not belong to you');
+    }
+
+    // Update the application with the new resume
+    const updatedApplication = await this.prisma.application.update({
+      where: { id: applicationId },
+      data: {
+        selectedResumeId: selectedResumeId,
+      },
+      include: {
+        job: {
+          select: {
+            id: true,
+            name: true,
+            companyName: true,
+            jobType: true,
+            location: true,
+            ctc: true,
+            gradYear: true,
+            applicationOpen: true,
+            applicationClosed: true,
+            jobDescription: true,
+            formLink: true,
+            status: true,
+          },
+        },
+        selectedResume: {
+          select: {
+            id: true,
+            fileName: true,
+            originalName: true,
+            filePath: true,
+          },
+        },
+      },
+    });
+
+    return {
+      message: 'Resume updated successfully',
+      application: updatedApplication,
     };
   }
 }
