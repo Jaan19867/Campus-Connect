@@ -31,6 +31,12 @@ export enum GenderEligibility {
   ALL = 'ALL',
 }
 
+export enum Gender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHER = 'OTHER',
+}
+
 export enum EventType {
   PRE_PLACEMENT_TALK = 'PRE_PLACEMENT_TALK',
   SEMINAR = 'SEMINAR',
@@ -56,18 +62,63 @@ export enum NotificationType {
 export interface Student {
   id: string;
   rollNumber: string;
-  email: string;
+  email: string; // Institutional email
   // Personal Information
   firstName: string;
   lastName: string;
+  personalEmail?: string;
   phoneNumber?: string;
+  dateOfBirth?: string;
+  gender?: Gender;
+  citizenship?: string;
+  fatherName?: string;
+  motherName?: string;
+  guardianName?: string;
+  category?: string;
+  debarred?: boolean;
+  // Address Information
+  currentAddressLine1?: string;
+  currentAddressLine2?: string;
+  currentAddressState?: string;
+  currentAddressPostalCode?: string;
+  permanentAddressLine1?: string;
+  permanentAddressLine2?: string;
+  permanentAddressState?: string;
+  permanentAddressPostalCode?: string;
   // Academic Information
+  // College Transcript
+  course?: string;
   branch: Branch;
   currentYear: number;
+  yearOfGraduation?: string;
   gpa: number;
   cgpa?: number;
-  tenthMarks?: number;
+  backlogSubjects?: number;
+  // Semester-wise CGPA
+  semester1Cgpa?: number;
+  semester2Cgpa?: number;
+  semester3Cgpa?: number;
+  semester4Cgpa?: number;
+  semester5Cgpa?: number;
+  semester6Cgpa?: number;
+  semester7Cgpa?: number;
+  semester8Cgpa?: number;
+  // Entrance Exam
+  entranceExam?: string;
+  entranceRank?: string;
+  entranceCategory?: string;
+  // XIIth Standard
+  twelfthSchoolName?: string;
+  twelfthBoard?: string;
   twelfthMarks?: number;
+  twelfthYearOfPassing?: string;
+  twelfthSubjects?: string;
+  // Xth Standard
+  tenthSchoolName?: string;
+  tenthBoard?: string;
+  tenthMarks?: number;
+  tenthYearOfPassing?: string;
+  tenthSubjects?: string;
   // Account Settings
   profilePicture?: string;
   isActive: boolean;
@@ -76,12 +127,48 @@ export interface Student {
   updatedAt: string;
   // Relations (when included)
   skills?: StudentSkill[];
+  languages?: StudentLanguage[];
+  technicalSkills?: StudentTechnicalSkill[];
+  otherSkills?: StudentOtherSkill[];
+  responsibilities?: StudentResponsibility[];
+  projectLinks?: StudentProjectLink[];
+  certificatesLink?: string;
 }
 
 export interface StudentSkill {
   id: string;
   skillName: string;
   proficiency: SkillLevel;
+  studentId: string;
+}
+
+export interface StudentLanguage {
+  id: string;
+  language: string;
+  studentId: string;
+}
+
+export interface StudentTechnicalSkill {
+  id: string;
+  skill: string;
+  studentId: string;
+}
+
+export interface StudentOtherSkill {
+  id: string;
+  skill: string;
+  studentId: string;
+}
+
+export interface StudentResponsibility {
+  id: string;
+  responsibility: string;
+  studentId: string;
+}
+
+export interface StudentProjectLink {
+  id: string;
+  projectLink: string;
   studentId: string;
 }
 

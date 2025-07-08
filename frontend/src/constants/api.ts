@@ -39,6 +39,17 @@ export const API_CONFIG = {
       ACADEMIC: '/student/my-information/academic',
       SKILLS: '/student/my-information/skills',
       SKILL_BY_ID: (id: string) => `/student/my-information/skills/${id}`,
+      LANGUAGES: '/student/students/languages',
+      LANGUAGE_BY_NAME: (language: string) => `/student/students/languages/${language}`,
+      TECHNICAL_SKILLS: '/student/my-information/technical-skills',
+      TECHNICAL_SKILL_BY_NAME: (skill: string) => `/student/my-information/technical-skills/${skill}`,
+      OTHER_SKILLS: '/student/my-information/other-skills',
+      OTHER_SKILL_BY_NAME: (skill: string) => `/student/my-information/other-skills/${skill}`,
+      RESPONSIBILITIES: '/student/my-information/responsibilities',
+      RESPONSIBILITY_BY_NAME: (responsibility: string) => `/student/my-information/responsibilities/${responsibility}`,
+      PROJECT_LINKS: '/student/my-information/project-links',
+      PROJECT_LINK_BY_URL: (projectLink: string) => `/student/my-information/project-links/${encodeURIComponent(projectLink)}`,
+      CERTIFICATES_LINK: '/student/my-information/certificates-link',
     },
     
     // Student Resumes endpoints

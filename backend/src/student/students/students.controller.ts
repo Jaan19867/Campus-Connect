@@ -70,4 +70,139 @@ export class StudentsController {
     const studentId = req.user.id;
     return this.studentsService.deleteSkill(studentId, skillName);
   }
+
+  // Languages Management
+  @Get('languages')
+  async getLanguages(@Request() req) {
+    const studentId = req.user.id;
+    return this.studentsService.getLanguages(studentId);
+  }
+
+  @Post('languages')
+  async addLanguage(
+    @Body() addLanguageDto: { language: string },
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.addLanguage(studentId, addLanguageDto.language);
+  }
+
+  @Delete('languages/:language')
+  async deleteLanguage(
+    @Param('language') language: string,
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.deleteLanguage(studentId, language);
+  }
+
+  // Technical Skills Management
+  @Get('technical-skills')
+  async getTechnicalSkills(@Request() req) {
+    const studentId = req.user.id;
+    return this.studentsService.getTechnicalSkills(studentId);
+  }
+
+  @Post('technical-skills')
+  async addTechnicalSkill(
+    @Body() addSkillDto: { skill: string },
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.addTechnicalSkill(studentId, addSkillDto.skill);
+  }
+
+  @Delete('technical-skills/:skill')
+  async deleteTechnicalSkill(
+    @Param('skill') skill: string,
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.deleteTechnicalSkill(studentId, skill);
+  }
+
+  // Other Skills Management
+  @Get('other-skills')
+  async getOtherSkills(@Request() req) {
+    const studentId = req.user.id;
+    return this.studentsService.getOtherSkills(studentId);
+  }
+
+  @Post('other-skills')
+  async addOtherSkill(
+    @Body() addSkillDto: { skill: string },
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.addOtherSkill(studentId, addSkillDto.skill);
+  }
+
+  @Delete('other-skills/:skill')
+  async deleteOtherSkill(
+    @Param('skill') skill: string,
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.deleteOtherSkill(studentId, skill);
+  }
+
+  // Responsibilities Management
+  @Get('responsibilities')
+  async getResponsibilities(@Request() req) {
+    const studentId = req.user.id;
+    return this.studentsService.getResponsibilities(studentId);
+  }
+
+  @Post('responsibilities')
+  async addResponsibility(
+    @Body() addResponsibilityDto: { responsibility: string },
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.addResponsibility(studentId, addResponsibilityDto.responsibility);
+  }
+
+  @Delete('responsibilities/:responsibility')
+  async deleteResponsibility(
+    @Param('responsibility') responsibility: string,
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.deleteResponsibility(studentId, responsibility);
+  }
+
+  // Project Links Management
+  @Get('project-links')
+  async getProjectLinks(@Request() req) {
+    const studentId = req.user.id;
+    return this.studentsService.getProjectLinks(studentId);
+  }
+
+  @Post('project-links')
+  async addProjectLink(
+    @Body() addProjectLinkDto: { projectLink: string },
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.addProjectLink(studentId, addProjectLinkDto.projectLink);
+  }
+
+  @Delete('project-links/:projectLink')
+  async deleteProjectLink(
+    @Param('projectLink') projectLink: string,
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.deleteProjectLink(studentId, decodeURIComponent(projectLink));
+  }
+
+  // Certificates Link Management
+  @Put('certificates-link')
+  async updateCertificatesLink(
+    @Body() updateCertificatesLinkDto: { certificatesLink: string },
+    @Request() req
+  ) {
+    const studentId = req.user.id;
+    return this.studentsService.updateCertificatesLink(studentId, updateCertificatesLinkDto.certificatesLink);
+  }
 }

@@ -8,6 +8,7 @@ import { StudentDashboardModule } from './student/dashboard/student-dashboard.mo
 import { StudentJobsModule } from './student/jobs/jobs.module';
 import { ApplicationsModule } from './student/applications/applications.module';
 import { StudentsModule } from './student/students/students.module';
+import { ResumesModule } from './student/resumes/resumes.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { StudentsModule } from './student/students/students.module';
     StudentDashboardModule,
     StudentJobsModule,
     ApplicationsModule,
-    StudentsModule
+    StudentsModule,
+    ResumesModule
   ],
   controllers: [AppController],
   providers: [AppService],

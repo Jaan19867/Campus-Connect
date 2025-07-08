@@ -17,21 +17,71 @@ datasource db {
 model Student {
   id              String   @id @default(cuid())
   rollNumber      String   @unique
-  email           String   @unique
+  email           String   @unique // Institutional email
   password        String   // Hashed
   
   // Personal Information
   firstName       String
   lastName        String
+  personalEmail   String?  // Personal email separate from institutional
   phoneNumber     String?
+  dateOfBirth     DateTime?
+  gender          Gender?
+  citizenship     String?
+  fatherName      String?
+  motherName      String?
+  guardianName    String?
+  category        String?  // General, OBC, SC, ST, etc.
+  debarred        Boolean  @default(false)
+  
+  // Address Information
+  currentAddressLine1      String?
+  currentAddressLine2      String?
+  currentAddressState      String?
+  currentAddressPostalCode String?
+  permanentAddressLine1    String?
+  permanentAddressLine2    String?
+  permanentAddressState    String?
+  permanentAddressPostalCode String?
   
   // Academic Information
+  // College Transcript
+  course          String?  // BTech, MTech, MBA, etc.
   branch          Branch
   currentYear     Int      // 1, 2, 3, 4
-  gpa             Float
-  cgpa            Float?
-  tenthMarks      Float?
-  twelfthMarks    Float?
+  yearOfGraduation String?
+  gpa             Float    // Current semester GPA
+  cgpa            Float?   // Aggregate CGPA
+  backlogSubjects Int      @default(0)
+  
+  // Semester-wise CGPA
+  semester1Cgpa   Float?
+  semester2Cgpa   Float?
+  semester3Cgpa   Float?
+  semester4Cgpa   Float?
+  semester5Cgpa   Float?
+  semester6Cgpa   Float?
+  semester7Cgpa   Float?
+  semester8Cgpa   Float?
+  
+  // Entrance Exam
+  entranceExam    String?  // JEE-Main, GATE, etc.
+  entranceRank    String?
+  entranceCategory String? // General, OBC, SC, ST
+  
+  // XIIth Standard
+  twelfthSchoolName    String?
+  twelfthBoard         String?  // CBSE, ICSE, State Board
+  twelfthMarks         Float?   // Percentage/CGPA
+  twelfthYearOfPassing String?
+  twelfthSubjects      String?  // Comma-separated subjects
+  
+  // Xth Standard
+  tenthSchoolName      String?
+  tenthBoard           String?  // CBSE, ICSE, State Board
+  tenthMarks           Float?   // Percentage/CGPA
+  tenthYearOfPassing   String?
+  tenthSubjects        String?  // Comma-separated subjects
   
   // Account Settings
   profilePicture  String?
@@ -41,11 +91,19 @@ model Student {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
+  // Skills and Portfolio
+  certificatesLink String?
+  
   // Relations
-  applications    Application[]
-  resumes         Resume[]
-  skills          StudentSkill[]
-  notifications Notification[]
+  applications       Application[]
+  resumes            Resume[]
+  skills             StudentSkill[]
+  technicalSkills    StudentTechnicalSkill[]
+  otherSkills        StudentOtherSkill[]
+  responsibilities   StudentResponsibility[]
+  projectLinks       StudentProjectLink[]
+  languages          StudentLanguage[]
+  notifications      Notification[]
   
   @@map("students")
 }
@@ -227,6 +285,7 @@ model Resume {
   originalName    String
   filePath        String
   fileSize        Int
+  mimeType        String
   
   // Metadata
   isDefault       Boolean  @default(false)
@@ -250,6 +309,61 @@ model StudentSkill {
   
   @@unique([studentId, skillName])
   @@map("student_skills")
+}
+
+model StudentLanguage {
+  id          String @id @default(cuid())
+  language    String
+  
+  studentId   String
+  student     Student @relation(fields: [studentId], references: [id])
+  
+  @@unique([studentId, language])
+  @@map("student_languages")
+}
+
+model StudentTechnicalSkill {
+  id          String @id @default(cuid())
+  skill       String
+  
+  studentId   String
+  student     Student @relation(fields: [studentId], references: [id])
+  
+  @@unique([studentId, skill])
+  @@map("student_technical_skills")
+}
+
+model StudentOtherSkill {
+  id          String @id @default(cuid())
+  skill       String
+  
+  studentId   String
+  student     Student @relation(fields: [studentId], references: [id])
+  
+  @@unique([studentId, skill])
+  @@map("student_other_skills")
+}
+
+model StudentResponsibility {
+  id            String @id @default(cuid())
+  responsibility String
+  
+  studentId     String
+  student       Student @relation(fields: [studentId], references: [id])
+  
+  @@unique([studentId, responsibility])
+  @@map("student_responsibilities")
+}
+
+model StudentProjectLink {
+  id          String @id @default(cuid())
+  projectLink String
+  
+  studentId   String
+  student     Student @relation(fields: [studentId], references: [id])
+  
+  @@unique([studentId, projectLink])
+  @@map("student_project_links")
 }
 
 model Notification {
@@ -330,6 +444,11 @@ enum GenderEligibility {
   BOTH
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
 
 enum NotificationType {
   JOB_ELIGIBLE

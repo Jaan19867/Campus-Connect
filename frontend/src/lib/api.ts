@@ -200,6 +200,40 @@ export class ApiClient {
     }
   }
 
+  async downloadFile(endpoint: string): Promise<Blob> {
+    const token = this.getToken();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.DOWNLOAD);
+
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'GET',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          this.clearToken();
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
+          throw new Error('Authentication failed');
+        }
+        throw new Error(`Failed to download file: ${response.statusText}`);
+      }
+
+      return response.blob();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
+  }
+
   // Auth specific methods
   async login(rollNumber: string, password: string): Promise<{ access_token: string }> {
     const response = await this.post<{ access_token: string }>(`${ENDPOINTS.STUDENT_AUTH.LOGIN}`, {
