@@ -4,6 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 import { SignupDto } from './dto/signup.dto';
 import { SigninDto } from './dto/signin.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Injectable()
 export class StudentAuthService {
@@ -131,5 +132,73 @@ export class StudentAuthService {
     }
 
     return student;
+  }
+
+  async changePassword(studentId: string, changePasswordDto: ChangePasswordDto) {
+    const { currentPassword, newPassword, confirmNewPassword } = changePasswordDto;
+
+    // Check if new passwords match
+    if (newPassword !== confirmNewPassword) {
+      throw new BadRequestException('New passwords do not match');
+    }
+
+    // Find student
+    const student = await this.prisma.student.findUnique({
+      where: { id: studentId },
+    });
+
+    if (!student) {
+      throw new UnauthorizedException('Student not found');
+    }
+
+    // Verify current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, student.password);
+    if (!isCurrentPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    // Hash new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await this.prisma.student.update({
+      where: { id: studentId },
+      data: { password: hashedNewPassword },
+    });
+
+    return { message: 'Password changed successfully' };
+  }
+
+  async updateProfilePicture(studentId: string, file: any) {
+    // Update student profile picture
+    const updatedStudent = await this.prisma.student.update({
+      where: { id: studentId },
+      data: {
+        profilePicture: file.path,
+      },
+      select: {
+        id: true,
+        rollNumber: true,
+        firstName: true,
+        lastName: true,
+        profilePicture: true,
+      },
+    });
+
+    return {
+      message: 'Profile picture updated successfully',
+      student: updatedStudent,
+    };
+  }
+
+  async getProfilePicture(studentId: string) {
+    const student = await this.prisma.student.findUnique({
+      where: { id: studentId },
+      select: {
+        profilePicture: true,
+      },
+    });
+
+    return student?.profilePicture;
   }
 }

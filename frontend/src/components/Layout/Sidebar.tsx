@@ -46,7 +46,7 @@ interface SidebarProps {
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, student, profilePictureUrl, logout } = useAuth();
 
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -56,6 +56,10 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const handleLogout = () => {
     logout();
   };
+
+  // Get display name
+  const displayName = user?.name || student?.firstName || 'Student';
+  const displayRollNumber = user?.rollNumber || student?.rollNumber || '';
 
   return (
     <Drawer
@@ -94,24 +98,27 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             background: 'rgba(255, 255, 255, 0.2)',
           }
         }}>
-          <Avatar sx={{ 
-            width: 72, 
-            height: 72, 
-            margin: '0 auto', 
-            mb: 2,
-            bgcolor: 'rgba(255, 255, 255, 0.2)',
-            color: 'white',
-            fontSize: '1.5rem',
-            fontWeight: 600,
-            border: '3px solid rgba(255, 255, 255, 0.3)',
-          }}>
-            {user?.rollNumber?.charAt(0)?.toUpperCase() || 'U'}
+          <Avatar 
+            src={profilePictureUrl || undefined}
+            sx={{ 
+              width: 72, 
+              height: 72, 
+              margin: '0 auto', 
+              mb: 2,
+              bgcolor: profilePictureUrl ? 'transparent' : 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              fontSize: '1.5rem',
+              fontWeight: 600,
+              border: '3px solid rgba(255, 255, 255, 0.3)',
+            }}
+          >
+            {!profilePictureUrl && (displayRollNumber?.charAt(0)?.toUpperCase() || displayName?.charAt(0)?.toUpperCase() || 'U')}
           </Avatar>
           <Typography variant="h6" noWrap sx={{ fontWeight: 600, mb: 0.5 }}>
-            {user?.name || 'Student'}
+            {displayName}
           </Typography>
           <Typography variant="body2" sx={{ opacity: 0.9 }} noWrap>
-            {user?.rollNumber}
+            {displayRollNumber}
           </Typography>
         </Box>
 

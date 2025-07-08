@@ -26,7 +26,7 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children, title = 'Dashboard' }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, student, profilePictureUrl } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -37,6 +37,10 @@ export default function MainLayout({ children, title = 'Dashboard' }: MainLayout
   const handleSidebarClose = () => {
     setSidebarOpen(false);
   };
+
+  // Get display name
+  const displayName = user?.name || student?.firstName || 'Student';
+  const displayRollNumber = user?.rollNumber || student?.rollNumber || '';
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
@@ -66,10 +70,11 @@ export default function MainLayout({ children, title = 'Dashboard' }: MainLayout
             {/* User Profile Section - Top Left */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Avatar 
+                src={profilePictureUrl || undefined}
                 sx={{ 
                   width: 44, 
                   height: 44, 
-                  bgcolor: 'primary.main',
+                  bgcolor: profilePictureUrl ? 'transparent' : 'primary.main',
                   color: 'white',
                   fontSize: '1.2rem',
                   fontWeight: 600,
@@ -78,15 +83,15 @@ export default function MainLayout({ children, title = 'Dashboard' }: MainLayout
                   boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
                 }}
               >
-                {user?.rollNumber?.charAt(0)?.toUpperCase() || 'U'}
+                {!profilePictureUrl && (displayRollNumber?.charAt(0)?.toUpperCase() || displayName?.charAt(0)?.toUpperCase() || 'U')}
               </Avatar>
               {!isMobile && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                   <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2, color: 'text.primary' }}>
-                    {user?.name || 'Student'}
+                    {displayName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
-                    {user?.rollNumber}
+                    {displayRollNumber}
                   </Typography>
                 </Box>
               )}
@@ -135,7 +140,7 @@ export default function MainLayout({ children, title = 'Dashboard' }: MainLayout
         <Box sx={{ mb: 3 }}>
         
           <Typography variant="body1" color="text.secondary">
-            Welcome back, {user?.name || user?.rollNumber || 'Student'}!
+            Welcome back, {displayName || displayRollNumber || 'Student'}!
           </Typography>
         </Box>
 

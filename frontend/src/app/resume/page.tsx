@@ -44,7 +44,9 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const ResumeSlot = styled(Box)(({ theme, hasResume }: { theme?: any; hasResume: boolean }) => ({
+const ResumeSlot = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'hasResume',
+})(({ theme, hasResume }: { theme?: any; hasResume: boolean }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',

@@ -60,6 +60,13 @@ export const API_CONFIG = {
       DELETE: (id: string) => `/student/resumes/${id}`,
     },
     
+    // Account Management endpoints
+    ACCOUNT: {
+      CHANGE_PASSWORD: '/student/auth/change-password',
+      PROFILE_PICTURE_UPLOAD: '/student/auth/profile-picture',
+      PROFILE_PICTURE_GET: '/student/auth/profile-picture',
+    },
+    
     // Health check
     HEALTH: '/',
   },
