@@ -15,6 +15,12 @@ import {
   Avatar,
   Pagination,
   Divider,
+  Autocomplete,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Popper,
 } from '@mui/material';
 import {
   Search,
@@ -48,11 +54,14 @@ const JobCard = styled(Card)(({ theme }) => ({
   },
 }));
 
+
+
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 10;
 
@@ -73,12 +82,33 @@ export default function JobsPage() {
     }
   };
 
-  // Filter jobs based on search term
-  const filteredJobs = jobs.filter(job =>
-    job.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.location?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Create search options for autocomplete
+  interface JobOption {
+    label: string;
+    company: string;
+    id: string;
+    job: Job;
+  }
+
+  const searchOptions: JobOption[] = jobs.map(job => ({
+    label: job.name,
+    company: job.companyName,
+    id: job.id,
+    job: job
+  }));
+
+  // Filter jobs based on search term or selected job
+  const filteredJobs = jobs.filter(job => {
+    if (selectedJob) {
+      return job.id === selectedJob.id;
+    }
+    if (searchTerm) {
+      return job.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             job.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             job.location?.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+    return true;
+  });
 
   // Pagination logic
   const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
@@ -87,6 +117,32 @@ export default function JobsPage() {
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleSearchChange = (event: any, newValue: string) => {
+    setSearchTerm(newValue);
+    setSelectedJob(null);
+    setCurrentPage(1);
+  };
+
+  const handleJobSelect = (event: any, newValue: string | JobOption | null) => {
+    if (newValue && typeof newValue === 'object') {
+      setSelectedJob(newValue.job);
+      setSearchTerm(newValue.label);
+    } else if (typeof newValue === 'string') {
+      setSearchTerm(newValue);
+      setSelectedJob(null);
+    } else {
+      setSelectedJob(null);
+      setSearchTerm('');
+    }
+    setCurrentPage(1);
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    setSelectedJob(null);
+    setCurrentPage(1);
   };
 
   const formatDate = (dateString: string) => {
@@ -144,22 +200,112 @@ export default function JobsPage() {
             </Alert>
           )}
 
-          {/* Search Bar */}
+          {/* Search Bar with Autocomplete */}
           <Box sx={{ mb: 3 }}>
-            <TextField
-              fullWidth
-              placeholder="Search for a Job"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ maxWidth: '600px' }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+              <Autocomplete<JobOption, false, false, true>
+                freeSolo
+                options={searchOptions}
+                value={selectedJob ? { label: selectedJob.name, company: selectedJob.companyName, id: selectedJob.id, job: selectedJob } : null}
+                onChange={handleJobSelect}
+                onInputChange={handleSearchChange}
+                filterOptions={(options: JobOption[], { inputValue }) => {
+                  const filtered = options.filter((option: JobOption) =>
+                    option.label.toLowerCase().includes(inputValue.toLowerCase()) ||
+                    option.company.toLowerCase().includes(inputValue.toLowerCase())
+                  );
+                  return filtered.slice(0, 10); // Limit to 10 suggestions
+                }}
+                getOptionLabel={(option: JobOption | string) => {
+                  if (typeof option === 'string') {
+                    return option;
+                  }
+                  return option.label || '';
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    fullWidth
+                    placeholder="Search for a Job"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        fontSize: '1rem',
+                        padding: '8px 14px',
+                      },
+                    }}
+                  />
+                )}
+                renderOption={(props, option: JobOption) => (
+                  <Box component="li" {...props} key={option.id}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                        {option.label}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {option.company}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
+                sx={{ 
+                  flex: 1,
+                  '& .MuiAutocomplete-paper': {
+                    marginTop: 0.5,
+                    border: '1px solid #e0e0e0',
+                    borderRadius: 2,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  },
+                  '& .MuiAutocomplete-option': {
+                    padding: 1.5,
+                    borderBottom: '1px solid #f0f0f0',
+                    '&:last-child': {
+                      borderBottom: 'none',
+                    },
+                    '&:hover': {
+                      backgroundColor: '#f5f5f5',
+                    },
+                    '&[aria-selected="true"]': {
+                      backgroundColor: '#e3f2fd',
+                    },
+                  },
+                }}
+                PaperComponent={(props) => (
+                  <Paper {...props} sx={{ mt: 1, boxShadow: 3 }} />
+                )}
+                PopperComponent={(props) => (
+                  <Popper {...props} placement="bottom-start" />
+                )}
+              />
+              
+              {/* Clear button */}
+              {(searchTerm || selectedJob) && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={clearSearch}
+                  sx={{ minWidth: 'auto', px: 2 }}
+                >
+                  Clear
+                </Button>
+              )}
+            </Box>
+            
+            {/* Results count */}
+            {(searchTerm || selectedJob) && (
+              <Box sx={{ mb: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {filteredJobs.length} result{filteredJobs.length !== 1 ? 's' : ''} found
+                </Typography>
+              </Box>
+            )}
           </Box>
 
           {/* Jobs Grid */}
