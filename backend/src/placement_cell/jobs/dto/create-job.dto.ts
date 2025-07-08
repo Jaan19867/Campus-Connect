@@ -1,4 +1,21 @@
-import { IsString, IsBoolean, IsOptional, IsInt, IsNumber, IsArray, IsDateString, IsEnum } from 'class-validator';
+import { IsString, IsBoolean, IsOptional, IsInt, IsNumber, IsArray, IsDateString, IsEnum, ValidateNested, IsObject } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class CompanyDto {
+  @IsString()
+  _id: string;
+
+  @IsString()
+  name: string;
+}
+
+class HandledByDto {
+  @IsString()
+  _id: string;
+
+  @IsString()
+  email: string;
+}
 
 export class CreateJobDto {
   // Basic Job Information
@@ -18,16 +35,14 @@ export class CreateJobDto {
   location?: string;
 
   // Company Information
-  @IsString()
-  companyName: string;
-
-  @IsOptional()
-  @IsString()
-  companyId?: string;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CompanyDto)
+  company: CompanyDto;
 
   // Job Details
   @IsString()
-  jobType: string; // "intern", "fulltime", etc.
+  jobType: string; // "intern", "fte", "fulltime", etc.
 
   @IsOptional()
   @IsInt()
@@ -53,12 +68,12 @@ export class CreateJobDto {
 
   // General Eligibility
   @IsOptional()
-  @IsEnum(['OPEN', 'CLOSED', 'DRAFT', 'CANCELLED'])
-  status?: string;
+  @IsString()
+  status?: string; // "open", "closed", "draft", "cancelled"
 
   @IsOptional()
-  @IsEnum(['MALE', 'FEMALE', 'BOTH'])
-  genderOpen?: string;
+  @IsString()
+  genderOpen?: string; // "Both", "Male", "Female"
 
   @IsOptional()
   @IsBoolean()
@@ -194,4 +209,11 @@ export class CreateJobDto {
   @IsArray()
   @IsInt({ each: true })
   mscBranches?: number[];
+
+  // Handled By
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => HandledByDto)
+  handledBy?: HandledByDto;
 } 

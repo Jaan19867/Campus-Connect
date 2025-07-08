@@ -71,24 +71,49 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
+          mt: 8, // Account for AppBar height
+          height: 'calc(100vh - 64px)', // Subtract AppBar height
         },
       }}
     >
-      <Box sx={{ overflow: 'auto', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
-        <Box sx={{ p: 2, textAlign: 'center' }}>
-          <Avatar sx={{ width: 56, height: 56, margin: '0 auto', mb: 1 }}>
+        <Box sx={{ 
+          p: 3, 
+          textAlign: 'center',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          position: 'relative',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.2)',
+          }
+        }}>
+          <Avatar sx={{ 
+            width: 72, 
+            height: 72, 
+            margin: '0 auto', 
+            mb: 2,
+            bgcolor: 'rgba(255, 255, 255, 0.2)',
+            color: 'white',
+            fontSize: '1.5rem',
+            fontWeight: 600,
+            border: '3px solid rgba(255, 255, 255, 0.3)',
+          }}>
             {user?.rollNumber?.charAt(0)?.toUpperCase() || 'U'}
           </Avatar>
-          <Typography variant="h6" noWrap>
+          <Typography variant="h6" noWrap sx={{ fontWeight: 600, mb: 0.5 }}>
             {user?.name || 'Student'}
           </Typography>
-          <Typography variant="body2" color="text.secondary" noWrap>
+          <Typography variant="body2" sx={{ opacity: 0.9 }} noWrap>
             {user?.rollNumber}
           </Typography>
         </Box>
-
-        <Divider />
 
         {/* Navigation Menu */}
         <List sx={{ flexGrow: 1, px: 1 }}>

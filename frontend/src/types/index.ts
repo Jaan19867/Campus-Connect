@@ -66,8 +66,8 @@ export interface Student {
   twelfthPercentage?: number;
   graduationPercentage?: number;
   postGraduationPercentage?: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface StudentSkill {
@@ -75,63 +75,74 @@ export interface StudentSkill {
   skillName: string;
   level: SkillLevel;
   studentId: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Job related types
 export interface Job {
   id: string;
-  title: string;
-  company: string;
-  description: string;
-  requirements: string;
-  responsibilities: string;
+  name: string;
+  companyName: string;
+  jobType: string;
   location: string;
-  salary?: string;
-  applyBy: Date;
-  status: JobStatus;
+  ctc?: number;
+  gradYear: string;
+  applicationOpen: string;
+  applicationClosed: string;
+  jobDescription?: string;
+  formLink?: string;
   
   // Eligibility criteria
-  minGpa?: number;
-  branches?: Branch[];
-  minTenthPercentage?: number;
-  minTwelfthPercentage?: number;
-  minGraduationPercentage?: number;
-  minPostGraduationPercentage?: number;
-  genderEligibility?: GenderEligibility;
-  pwdEligible?: boolean;
-  maxBacklogs?: number;
-  
-  // Multi-degree eligibility
-  bTechEligible?: boolean;
-  mTechEligible?: boolean;
-  mbaEligible?: boolean;
-  bDesEligible?: boolean;
-  mDesEligible?: boolean;
-  baEligible?: boolean;
-  maEligible?: boolean;
-  bbaEligible?: boolean;
-  mScEligible?: boolean;
-  
-  // Degree-specific cutoffs
-  bTechCutoff?: number;
-  mTechCutoff?: number;
+  btech?: boolean;
+  btechCutoff?: number;
+  btechBranches?: number[];
+  mtech?: boolean;
+  mtechCutoff?: number;
+  mtechBranches?: number[];
+  mba?: boolean;
   mbaCutoff?: number;
-  bDesCutoff?: number;
-  mDesCutoff?: number;
+  mbaBranches?: number[];
+  bdes?: boolean;
+  bdesCutoff?: number;
+  mdes?: boolean;
+  mdesCutoff?: number;
+  ba?: boolean;
   baCutoff?: number;
+  ma?: boolean;
   maCutoff?: number;
+  bba?: boolean;
   bbaCutoff?: number;
-  mScCutoff?: number;
+  msc?: boolean;
+  mscCutoff?: number;
+  mscBranches?: number[];
   
-  createdAt: Date;
-  updatedAt: Date;
+  tenthPercentageCutoff?: number;
+  twelfthPercentageCutoff?: number;
+  undergraduatePercentageCutoff?: number;
+  genderOpen?: string;
+  pwdOnly?: boolean;
+  backlogsAllowed?: number;
+  
+  // Application info
+  applications?: Array<{
+    id: string;
+    status: string;
+    appliedAt: string;
+  }>;
+  
+  // Computed fields
+  isEligible?: boolean;
+  hasApplied?: boolean;
+  applicationStatus?: string;
+  
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface JobWithEligibility extends Job {
   isEligible: boolean;
-  eligibilityReasons: string[];
+  eligibilityReasons?: string[];
 }
 
 // Application related types
@@ -140,8 +151,8 @@ export interface Application {
   studentId: string;
   jobId: string;
   status: ApplicationStatus;
-  appliedAt: Date;
-  updatedAt: Date;
+  appliedAt: string;
+  updatedAt: string;
   job: Job;
 }
 
@@ -162,7 +173,7 @@ export interface Resume {
   fileSize: number;
   mimeType: string;
   studentId: string;
-  uploadedAt: Date;
+  uploadedAt: string;
 }
 
 // Event related types
@@ -172,10 +183,10 @@ export interface Event {
   description: string;
   company: string;
   eventType: EventType;
-  eventDate: Date;
+  eventDate: string;
   location: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Notification related types
@@ -188,8 +199,8 @@ export interface Notification {
   jobId?: string;
   eventId?: string;
   isRead: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Dashboard related types

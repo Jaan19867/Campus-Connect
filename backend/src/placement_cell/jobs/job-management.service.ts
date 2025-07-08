@@ -9,14 +9,24 @@ export class JobManagementService {
 
   async createJob(createJobDto: CreateJobDto, adminId: string) {
     try {
+      // Get admin details for handledBy field
+      const admin = await this.prisma.placementCell.findUnique({
+        where: { id: adminId },
+        select: { id: true, email: true }
+      });
+
+      if (!admin) {
+        throw new BadRequestException('Admin not found');
+      }
+
       const job = await this.prisma.job.create({
         data: {
           name: createJobDto.name,
           jobDescription: createJobDto.jobDescription,
           formLink: createJobDto.formLink,
           location: createJobDto.location,
-          companyName: createJobDto.companyName,
-          companyId: createJobDto.companyId,
+          companyName: createJobDto.company.name,
+          companyId: createJobDto.company._id,
           jobType: createJobDto.jobType,
           ctc: createJobDto.ctc,
           gradYear: createJobDto.gradYear,
@@ -24,8 +34,8 @@ export class JobManagementService {
           postData: createJobDto.postData,
           applicationOpen: new Date(createJobDto.applicationOpen),
           applicationClosed: new Date(createJobDto.applicationClosed),
-          status: createJobDto.status as JobStatus || 'OPEN',
-          genderOpen: createJobDto.genderOpen as GenderEligibility || 'BOTH',
+          status: this.mapStatus(createJobDto.status || 'open'),
+          genderOpen: this.mapGenderEligibility(createJobDto.genderOpen || 'both'),
           pwdOnly: createJobDto.pwdOnly || false,
           psu: createJobDto.psu || false,
           backlogsAllowed: createJobDto.backlogsAllowed || 0,
@@ -145,5 +155,34 @@ export class JobManagementService {
     return this.prisma.job.delete({
       where: { id },
     });
+  }
+
+  // Helper methods to map string values to enum values
+  private mapStatus(status: string): JobStatus {
+    switch (status?.toLowerCase()) {
+      case 'open':
+        return JobStatus.OPEN;
+      case 'closed':
+        return JobStatus.CLOSED;
+      case 'draft':
+        return JobStatus.DRAFT;
+      case 'cancelled':
+        return JobStatus.CANCELLED;
+      default:
+        return JobStatus.OPEN;
+    }
+  }
+
+  private mapGenderEligibility(gender: string): GenderEligibility {
+    switch (gender?.toLowerCase()) {
+      case 'male':
+        return GenderEligibility.MALE;
+      case 'female':
+        return GenderEligibility.FEMALE;
+      case 'both':
+        return GenderEligibility.BOTH;
+      default:
+        return GenderEligibility.BOTH;
+    }
   }
 }

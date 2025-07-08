@@ -9,6 +9,7 @@ import {
   Box,
   useTheme,
   useMediaQuery,
+  Avatar,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -49,17 +50,50 @@ export default function MainLayout({ children, title = 'Dashboard' }: MainLayout
           boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
         }}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleSidebarToggle}
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+        <Toolbar sx={{ minHeight: 64, px: { xs: 2, sm: 3 } }}>
+          {/* Left side - Menu and Profile */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleSidebarToggle}
+              sx={{ p: 1 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            
+            {/* User Profile Section - Top Left */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Avatar 
+                sx={{ 
+                  width: 44, 
+                  height: 44, 
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  fontSize: '1.2rem',
+                  fontWeight: 600,
+                  border: '2px solid',
+                  borderColor: 'primary.light',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                }}
+              >
+                {user?.rollNumber?.charAt(0)?.toUpperCase() || 'U'}
+              </Avatar>
+              {!isMobile && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2, color: 'text.primary' }}>
+                    {user?.name || 'Student'}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
+                    {user?.rollNumber}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Box>
           
+          {/* Center - Title */}
           <Typography
             variant="h6"
             component="div"
@@ -67,17 +101,16 @@ export default function MainLayout({ children, title = 'Dashboard' }: MainLayout
               flexGrow: 1,
               fontWeight: 600,
               color: 'primary.main',
+              textAlign: 'center',
             }}
           >
             TNP RM
           </Typography>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {/* Right side - Notifications */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <IconButton color="inherit">
               <Notifications />
-            </IconButton>
-            <IconButton color="inherit">
-              <AccountCircle />
             </IconButton>
           </Box>
         </Toolbar>
@@ -93,20 +126,14 @@ export default function MainLayout({ children, title = 'Dashboard' }: MainLayout
           flexGrow: 1,
           p: 3,
           mt: 8, // Account for AppBar height
-          minHeight: '100vh',
+          minHeight: 'calc(100vh - 64px)', // Subtract AppBar height
           backgroundColor: 'background.default',
+          overflow: 'auto',
         }}
       >
         {/* Page Title */}
         <Box sx={{ mb: 3 }}>
-          <Typography
-            variant="h4"
-            component="h1"
-            gutterBottom
-            sx={{ fontWeight: 600, color: 'text.primary' }}
-          >
-            {title}
-          </Typography>
+        
           <Typography variant="body1" color="text.secondary">
             Welcome back, {user?.name || user?.rollNumber || 'Student'}!
           </Typography>

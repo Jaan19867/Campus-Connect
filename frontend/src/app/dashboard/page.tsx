@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
   Tab,
   Tabs,
   List,
@@ -21,13 +20,10 @@ import {
   CircularProgress,
 } from '@mui/material';
 import {
-  Work,
   Event,
   AccessTime,
   Business,
   LocationOn,
-  School,
-  Assignment,
   Notifications,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
@@ -45,13 +41,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const StatsCard = styled(Card)(({ theme }) => ({
-  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  color: 'white',
-  '& .MuiCardContent-root': {
-    padding: theme.spacing(3),
-  },
-}));
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -113,7 +103,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <MainLayout title="Dashboard">
+        <MainLayout>
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
             <CircularProgress />
           </Box>
@@ -124,88 +114,13 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <MainLayout title="Dashboard">
+      <MainLayout>
         <Box sx={{ width: '100%' }}>
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
               {error}
             </Alert>
           )}
-
-          {/* Stats Cards */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <CardContent>
-                  <Box display="flex" alignItems="center" justifyContent="space-between">
-                    <Box>
-                      <Typography variant="h4" fontWeight="bold">
-                        {notifications.length}
-                      </Typography>
-                      <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                        Eligible Jobs
-                      </Typography>
-                    </Box>
-                    <Work sx={{ fontSize: 40, opacity: 0.8 }} />
-                  </Box>
-                </CardContent>
-              </StatsCard>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <CardContent>
-                  <Box display="flex" alignItems="center" justifyContent="space-between">
-                    <Box>
-                      <Typography variant="h4" fontWeight="bold">
-                        {events.length}
-                      </Typography>
-                      <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                        Upcoming Events
-                      </Typography>
-                    </Box>
-                    <Event sx={{ fontSize: 40, opacity: 0.8 }} />
-                  </Box>
-                </CardContent>
-              </StatsCard>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <CardContent>
-                  <Box display="flex" alignItems="center" justifyContent="space-between">
-                    <Box>
-                      <Typography variant="h4" fontWeight="bold">
-                        0
-                      </Typography>
-                      <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                        Applications
-                      </Typography>
-                    </Box>
-                    <Assignment sx={{ fontSize: 40, opacity: 0.8 }} />
-                  </Box>
-                </CardContent>
-              </StatsCard>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <StatsCard>
-                <CardContent>
-                  <Box display="flex" alignItems="center" justifyContent="space-between">
-                    <Box>
-                      <Typography variant="h4" fontWeight="bold">
-                        0
-                      </Typography>
-                      <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                        Shortlisted
-                      </Typography>
-                    </Box>
-                    <School sx={{ fontSize: 40, opacity: 0.8 }} />
-                  </Box>
-                </CardContent>
-              </StatsCard>
-            </Grid>
-          </Grid>
 
           {/* Tabs for Notifications and Events */}
           <StyledCard>
