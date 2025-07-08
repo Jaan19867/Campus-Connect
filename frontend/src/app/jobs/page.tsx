@@ -26,6 +26,7 @@ import {
   Search,
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
+import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import MainLayout from '@/components/Layout/MainLayout';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -64,6 +65,7 @@ export default function JobsPage() {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 10;
+  const router = useRouter();
 
   useEffect(() => {
     fetchJobs();
@@ -363,9 +365,7 @@ export default function JobsPage() {
                         color="primary"
                         sx={{ flex: 1 }}
                         onClick={() => {
-                          if (job.jobDescription) {
-                            window.open(job.jobDescription, '_blank');
-                          }
+                          router.push(`/jobs/${job.id}`);
                         }}
                       >
                         KNOW MORE

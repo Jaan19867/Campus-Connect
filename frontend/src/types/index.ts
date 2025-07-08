@@ -1,15 +1,15 @@
 // Enums
 export enum Branch {
-  CSE = 'CSE',
-  ECE = 'ECE',
-  EEE = 'EEE',
-  MECH = 'MECH',
+  COMPUTER_SCIENCE = 'COMPUTER_SCIENCE',
+  ELECTRONICS = 'ELECTRONICS',
+  MECHANICAL = 'MECHANICAL',
   CIVIL = 'CIVIL',
-  CHEM = 'CHEM',
-  IT = 'IT',
-  AI_ML = 'AI_ML',
-  DS = 'DS',
-  CYBER = 'CYBER',
+  ELECTRICAL = 'ELECTRICAL',
+  CHEMICAL = 'CHEMICAL',
+  AEROSPACE = 'AEROSPACE',
+  BIOTECHNOLOGY = 'BIOTECHNOLOGY',
+  INDUSTRIAL = 'INDUSTRIAL',
+  INFORMATION_TECHNOLOGY = 'INFORMATION_TECHNOLOGY',
 }
 
 export enum JobStatus {
@@ -56,27 +56,33 @@ export enum NotificationType {
 export interface Student {
   id: string;
   rollNumber: string;
-  name?: string;
-  email?: string;
+  email: string;
+  // Personal Information
+  firstName: string;
+  lastName: string;
   phoneNumber?: string;
-  branch?: Branch;
-  year?: number;
-  gpa?: number;
-  tenthPercentage?: number;
-  twelfthPercentage?: number;
-  graduationPercentage?: number;
-  postGraduationPercentage?: number;
+  // Academic Information
+  branch: Branch;
+  currentYear: number;
+  gpa: number;
+  cgpa?: number;
+  tenthMarks?: number;
+  twelfthMarks?: number;
+  // Account Settings
+  profilePicture?: string;
+  isActive: boolean;
+  // Timestamps
   createdAt: string;
   updatedAt: string;
+  // Relations (when included)
+  skills?: StudentSkill[];
 }
 
 export interface StudentSkill {
   id: string;
   skillName: string;
-  level: SkillLevel;
+  proficiency: SkillLevel;
   studentId: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 // Job related types
