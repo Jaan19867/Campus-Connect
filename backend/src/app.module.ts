@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PcAuthModule } from './placement_cell/auth/pc-auth.module';
 import { JobManagementModule } from './placement_cell/jobs/job-management.module';
+import { ApplicationManagementModule } from './placement_cell/application-management/application-management.module';
 import { StudentAuthModule } from './student/auth/auth.module';
 import { StudentDashboardModule } from './student/dashboard/student-dashboard.module';
 import { StudentJobsModule } from './student/jobs/jobs.module';
@@ -14,6 +15,7 @@ import { ResumesModule } from './student/resumes/resumes.module';
   imports: [
     PcAuthModule, 
     JobManagementModule, 
+    ApplicationManagementModule,
     StudentAuthModule,
     StudentDashboardModule,
     StudentJobsModule,

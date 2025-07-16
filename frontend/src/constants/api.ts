@@ -12,6 +12,26 @@ export const API_CONFIG = {
       PROFILE: '/student/auth/profile',
     },
     
+    // Admin Auth endpoints
+    ADMIN_AUTH: {
+      LOGIN: '/placement-cell/auth/login',
+      PROFILE: '/placement-cell/auth/profile',
+    },
+    
+    // Admin Job Management endpoints
+    ADMIN_JOBS: {
+      BASE: '/placement-cell/jobs',
+      BY_ID: (id: string) => `/placement-cell/jobs/${id}`,
+      UPDATE_STATUS: (id: string) => `/placement-cell/jobs/${id}/status`,
+      DELETE: (id: string) => `/placement-cell/jobs/delete/${id}`,
+    },
+    
+    // Admin Student Management endpoints
+    ADMIN_STUDENTS: {
+      BASE: '/placement-cell/students',
+      BY_ID: (id: string) => `/placement-cell/students/${id}`,
+    },
+    
     // Student Dashboard endpoints
     STUDENT_DASHBOARD: {
       BASE: '/student/dashboard',

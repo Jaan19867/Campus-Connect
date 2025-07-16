@@ -1,17 +1,18 @@
-import { BASE_URL, TIMEOUTS, STATUS_CODES ,ENDPOINTS } from '@/constants';
+import { BASE_URL, TIMEOUTS, ENDPOINTS } from '@/constants';
 import { getCookie, setCookie, deleteCookie } from 'cookies-next';
 import { jwtDecode } from 'jwt-decode';
 
-interface DecodedToken {
+interface DecodedAdminToken {
   sub: string;
-  rollNumber: string;
+  email: string;
+  role: string;
   exp: number;
   iat: number;
 }
 
-export class ApiClient {
+export class AdminApiClient {
   private baseUrl: string;
-  private tokenKey: string = 'student_token';
+  private tokenKey: string = 'admin_token';
 
   constructor(baseUrl: string = BASE_URL) {
     this.baseUrl = baseUrl;
@@ -36,7 +37,7 @@ export class ApiClient {
         // Token expired or invalid
         this.clearToken();
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          window.location.href = '/admin/login';
         }
         throw new Error('Authentication failed');
       }
@@ -71,14 +72,14 @@ export class ApiClient {
     if (!token) return false;
 
     try {
-      const decoded: DecodedToken = jwtDecode(token);
+      const decoded: DecodedAdminToken = jwtDecode(token);
       return decoded.exp > Date.now() / 1000;
     } catch {
       return false;
     }
   }
 
-  getUserInfo(): DecodedToken | null {
+  getAdminInfo(): DecodedAdminToken | null {
     const token = this.getToken();
     if (!token) return null;
 
@@ -115,26 +116,6 @@ export class ApiClient {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: 'POST',
-        headers: this.getAuthHeaders(),
-        body: data ? JSON.stringify(data) : undefined,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-      return this.handleResponse<T>(response);
-    } catch (error) {
-      clearTimeout(timeoutId);
-      throw error;
-    }
-  }
-
-  async put<T>(endpoint: string, data?: any): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.DEFAULT);
-
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'PUT',
         headers: this.getAuthHeaders(),
         body: data ? JSON.stringify(data) : undefined,
         signal: controller.signal,
@@ -187,100 +168,50 @@ export class ApiClient {
     }
   }
 
-  async uploadFile<T>(endpoint: string, file: File, additionalData?: Record<string, string>): Promise<T> {
-    const token = this.getToken();
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    if (additionalData) {
-      Object.entries(additionalData).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
+  // Admin-specific API methods
+  async login(email: string, password: string): Promise<{ access_token: string; admin: any }> {
+    const response = await this.post<{ access_token: string; admin: any }>(ENDPOINTS.ADMIN_AUTH.LOGIN, { email, password });
+    if (response.access_token) {
+      this.setToken(response.access_token);
     }
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.UPLOAD);
-
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'POST',
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` }),
-          // Don't set Content-Type for FormData, let browser set it with boundary
-        },
-        body: formData,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-      return this.handleResponse<T>(response);
-    } catch (error) {
-      clearTimeout(timeoutId);
-      throw error;
-    }
-  }
-
-  async downloadFile(endpoint: string): Promise<Blob> {
-    const token = this.getToken();
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUTS.DOWNLOAD);
-
-    try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
-        method: 'GET',
-        headers: {
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          this.clearToken();
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
-          throw new Error('Authentication failed');
-        }
-        throw new Error(`Failed to download file: ${response.statusText}`);
-      }
-
-      return response.blob();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      throw error;
-    }
-  }
-
-  // Auth specific methods
-  async login(rollNumber: string, password: string): Promise<{ access_token: string }> {
-    const response = await this.post<{ access_token: string }>(`${ENDPOINTS.STUDENT_AUTH.LOGIN}`, {
-      rollNumber,
-      password,
-    });
-    
-    this.setToken(response.access_token);
     return response;
   }
 
-  async signup(rollNumber: string, password: string): Promise<{ access_token: string }> {
-    const response = await this.post<{ access_token: string }>(`${ENDPOINTS.STUDENT_AUTH.SIGNUP}`, {
-      rollNumber,
-      password,
-    });
-    
-    this.setToken(response.access_token);
-    return response;
+  async getProfile(): Promise<any> {
+    return this.get(ENDPOINTS.ADMIN_AUTH.PROFILE);
+  }
+
+  async getAllJobs(): Promise<any[]> {
+    return this.get(ENDPOINTS.ADMIN_JOBS.BASE);
+  }
+
+  async getJobById(id: string): Promise<any> {
+    return this.get(ENDPOINTS.ADMIN_JOBS.BY_ID(id));
+  }
+
+  async updateJobStatus(id: string, status: string): Promise<any> {
+    return this.patch(ENDPOINTS.ADMIN_JOBS.UPDATE_STATUS(id), { status });
+  }
+
+  async deleteJob(id: string): Promise<any> {
+    return this.delete(ENDPOINTS.ADMIN_JOBS.DELETE(id));
+  }
+
+  async getAllStudents(): Promise<any[]> {
+    return this.get(ENDPOINTS.ADMIN_STUDENTS.BASE);
+  }
+
+  async getStudentById(id: string): Promise<any> {
+    return this.get(ENDPOINTS.ADMIN_STUDENTS.BY_ID(id));
   }
 
   logout(): void {
     this.clearToken();
     if (typeof window !== 'undefined') {
-      window.location.href = '/login';
+      window.location.href = '/admin/login';
     }
   }
 }
 
-export const apiClient = new ApiClient(); 
+// Create and export a singleton instance
+export const adminApi = new AdminApiClient(); 

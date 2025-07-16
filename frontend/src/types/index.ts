@@ -246,7 +246,15 @@ export interface Application {
   status: ApplicationStatus;
   appliedAt: string;
   updatedAt: string;
+  coverLetter?: string;
+  selectedResumeId?: string;
   job: Job;
+  selectedResume?: {
+    id: string;
+    fileName: string;
+    originalName: string;
+    filePath?: string;
+  };
 }
 
 export interface ApplicationStats {
