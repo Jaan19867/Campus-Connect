@@ -101,4 +101,4 @@ Once the backend is running, you can access:
 1. Create a new branch for your feature
 2. Make your changes
 3. Test both frontend and backend
-4. Submit a pull request 
+4. Submit a pull -request 
